@@ -41,7 +41,14 @@
             <div class="container">
                 <div class="table-response">
 
+
+
                     <table class="table">
+                        @if ($message = Session::get('success'))
+                            <div class="alert alert-success">
+                                <p>{{ $message }}</p>
+                            </div>
+                        @endif
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
@@ -55,14 +62,20 @@
                         <tbody>
                             @foreach ($data as $item)
                                 <tr>
-                                    <td>{{$item->id}}</td>
+                                    <td>{{ $item->id }}</td>
                                     <td>{{ $item->title }} <br> {{ $item->created_at }}</td>
-                                    <td>Quality product in low cost</td>
+                                    <td>{{ $item->description }}</td>
                                     <td>
                                         <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant">
 
                                             <dt class="col-sm-3 pb-0">
                                                 SM/ Red/ V-Nick
+
+                                                {{-- @foreach ($variants as $item)
+                                                        <td>{{$item->variant}}</td>
+                                                    @endforeach --}}
+
+
                                             </dt>
                                             <dd class="col-sm-9">
                                                 <dl class="row mb-0">
@@ -95,7 +108,7 @@
         <div class="card-footer">
             <div class="row justify-content-between">
                 <div class="col-md-6">
-                    <p>Showing {{$data->firstItem()}} to {{$data->lastItem()}} out of {{$data->total()}}</p>
+                    <p>Showing {{ $data->firstItem() }} to {{ $data->lastItem() }} out of {{ $data->total() }}</p>
                     {!! $data->links() !!}
                 </div>
                 <div class="col-md-2">

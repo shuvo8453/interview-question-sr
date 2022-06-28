@@ -110,6 +110,10 @@ export default {
         variants: {
             type: Array,
             required: true
+        }, 
+        product: {
+            type: Array, 
+            required: true
         }
     },
     data() {
@@ -202,6 +206,7 @@ export default {
     },
     mounted() {
         console.log('Component mounted.')
+        console.log(this.product)
     }
 }
 </script>

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\BlogCategory;
+use App\Models\Variant;
 use Illuminate\Http\Request;
 
 class BlogCategoryController extends Controller
@@ -35,6 +37,14 @@ class BlogCategoryController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'title' => 'required',
+            'sku' => 'required',
+            'description' => 'required',
+        ]);
+
+        BlogCategory::create($request->all());
+        return redirect()->route('blogs.category.product')->with('success', 'Product created successfully.');
     }
 
     /**
@@ -46,6 +56,7 @@ class BlogCategoryController extends Controller
     public function show($id)
     {
         //
+        return view('blogs.category.show', compact('product'));
     }
 
     /**
@@ -57,6 +68,8 @@ class BlogCategoryController extends Controller
     public function edit($id)
     {
         //
+        $variants = Variant::all();
+        return view('blogs.category.edit', compact('variants'));
     }
 
     /**
@@ -69,6 +82,14 @@ class BlogCategoryController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $request->validate([
+            'title' => 'required',
+            'sku' => 'required',
+            'description' => 'required',
+        ]);
+
+        BlogCategory::update($request->all());
+        return redirect()->route('blogs.category.product')->with('success', 'Product created successfully.');
     }
 
     /**
@@ -80,5 +101,6 @@ class BlogCategoryController extends Controller
     public function destroy($id)
     {
         //
+        
     }
 }

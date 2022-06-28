@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\VariantRequest;
+use App\Models\Product;
 use App\Models\Variant;
+use Dotenv\Result\Success;
 use Illuminate\Http\Request;
 
 class VariantController extends Controller
@@ -16,7 +18,13 @@ class VariantController extends Controller
     public function index()
     {
         $variants = Variant::paginate(10);
+        // $variants = Product::all();
         return view('products.variant.index', compact('variants'));
+
+        // $view = View::make('variants');
+        // $view->nest('products.variant.index', ['variants' => $variants]);
+
+        // return view('combined')->with('variants', $variants);
     }
 
     /**
@@ -52,6 +60,7 @@ class VariantController extends Controller
     public function show(Variant $variant)
     {
         //
+        return view('products.variant.show', compact('variants'));
     }
 
     /**
@@ -88,6 +97,7 @@ class VariantController extends Controller
      */
     public function destroy(Variant $variant)
     {
-        //
+        $variant->delete();
+        return redirect()->route('products.product-variant')->with('success','Variant deleted successfully');
     }
 }

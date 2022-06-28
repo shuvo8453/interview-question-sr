@@ -17,13 +17,31 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        // $data = DB::table('products')->get();
-        $data = Product::paginate(5);
+        $params = $request->only('title', 'date');
+        $title = ''; $date = '';
+
+        if( isset($params['title']) ){
+            $title = $params['title']; 
+        }
+
+        if( isset($params['date']) ){
+            $date = $params['date'];
+
+            $data = Product::where('title', 'like',  '%' . $title . '%')
+                    ->where(DB::raw("(DATE_FORMAT(created_at,'%Y-%m-%d'))"), $date)
+                    ->paginate(5);
+        }else{   
+            $data = Product::where('title', 'like',  '%' . $title . '%')->paginate(5);
+        }
+
+
         return view('products.index', ['data' => $data]);
+
     }
 
+ 
     /**
      * Show the form for creating a new resource.
      *
@@ -43,6 +61,16 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+  
+        print_r($request->all()); 
+        $request->validate([
+            'title' => 'required',
+            'sku' => 'required',
+            'description' => 'required',
+        ]);
+        
+        Product::create($request->all());
+        return redirect()->route('products.product')->with('success', 'Product created successfully.');
     }
 
 
@@ -52,8 +80,9 @@ class ProductController extends Controller
      * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
-    public function show($product)
+    public function show(Product $product)
     {
+        return view('product.show', compact('product'));
     }
 
     /**
@@ -62,10 +91,13 @@ class ProductController extends Controller
      * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
-    public function edit(Product $product)
+    public function edit(Product $product_object, Request $request)
     {
+        $product_id = ($request->segment(2)); 
         $variants = Variant::all();
-        return view('products.edit', compact('variants'));
+        $product_obj = Product::find($product_id);
+        $product['title'] = $product_obj->title; 
+        return view('products.edit', compact('variants', 'product'));
     }
 
     /**
@@ -78,6 +110,14 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         //
+        $request->validate([
+            'title' => 'required',
+            'sku' => 'required',
+            'description' => 'required',
+        ]);
+
+        Product::update($request->all());
+        return redirect()->route('products.product')->with('success', 'Product created successfully.');
     }
 
     /**
@@ -89,5 +129,15 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         //
+        $product->delete();
+        return redirect()->route('products.product')->with('success', 'Product deleted successfully');
+    }
+
+    public function search()
+    {
+        $search_text = $_GET['query'];
+        $products = Product::where('title', 'LIKE', '%'.$search_text.'%')->with('blog')->get();
+
+        return view('products.search', compact('products'));
     }
 }

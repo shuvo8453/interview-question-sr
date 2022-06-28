@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Blog;
+use App\Models\Variant;
 use Illuminate\Http\Request;
 
 class BlogController extends Controller
@@ -36,6 +37,14 @@ class BlogController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'title' => 'required',
+            'sku' => 'required',
+            'description' => 'required',
+        ]);
+
+        Blog::create($request->all());
+        return redirect()->route('blogs.product')->with('success', 'Product created successfully.');
     }
 
     /**
@@ -47,6 +56,7 @@ class BlogController extends Controller
     public function show(Blog $blog)
     {
         //
+        return view('blogs.show', compact('product'));
     }
 
     /**
@@ -58,6 +68,8 @@ class BlogController extends Controller
     public function edit(Blog $blog)
     {
         //
+        $variants = Variant::all();
+        return view('blogs.category.edit', compact('variants'));
     }
 
     /**
@@ -70,6 +82,14 @@ class BlogController extends Controller
     public function update(Request $request, Blog $blog)
     {
         //
+        $request->validate([
+            'title' => 'required',
+            'sku' => 'required',
+            'description' => 'required',
+        ]);
+
+        Blog::update($request->all());
+        return redirect()->route('blogs.product')->with('success', 'Product created successfully.');
     }
 
     /**
@@ -81,5 +101,7 @@ class BlogController extends Controller
     public function destroy(Blog $blog)
     {
         //
+        $blog->delete();
+        return redirect()->route('blogs.product')->with('success', 'Product deleted successfully');
     }
 }
